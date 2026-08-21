@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ZeroTrust OS - Control Center</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        bordercol: '#334155',
+                        brandgreen: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 font-sans antialiased h-screen flex overflow-hidden">
+
+    <!-- Левый сайдбар с иконками -->
+    <aside class="w-16 bg-white border-r border-slate-200 flex flex-col items-center py-6 justify-between z-10">
+        <div class="flex flex-col space-y-6 items-center">
+            <!-- Логотип -->
+            <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                <i class="fa-solid fa-cube text-lg"></i>
+            </div>
+            <!-- Навигация (каждой кнопке задан data-target) -->
+            <div class="flex flex-col space-y-4 pt-4 text-slate-400">
+                <a href="#" data-target="tab-dashboard" class="nav-btn p-3 rounded-xl bg-emerald-50 text-emerald-600 transition"><i class="fa-solid fa-table-cells text-lg"></i></a>
+                <a href="#" data-target="tab-metrics" class="nav-btn p-3 rounded-xl hover:bg-slate-100 hover:text-slate-700 transition"><i class="fa-solid fa-chart-line text-lg"></i></a>
+                <a href="#" data-target="tab-plugins" class="nav-btn p-3 rounded-xl hover:bg-slate-100 hover:text-slate-700 transition"><i class="fa-solid fa-puzzle-piece text-lg"></i></a>
+                <a href="#" data-target="tab-security" class="nav-btn p-3 rounded-xl hover:bg-slate-100 hover:text-slate-700 transition"><i class="fa-solid fa-shield-halved text-lg"></i></a>
+                <a href="#" data-target="tab-database" class="nav-btn p-3 rounded-xl hover:bg-slate-100 hover:text-slate-700 transition"><i class="fa-solid fa-database text-lg"></i></a>
+                <a href="#" data-target="tab-network" class="nav-btn p-3 rounded-xl hover:bg-slate-100 hover:text-slate-700 transition"><i class="fa-solid fa-network-wired text-lg"></i></a>
+            </div>
+        </div>
+        <div class="flex flex-col space-y-4 text-slate-400">
+            <a href="#" data-target="tab-settings" class="nav-btn p-3 rounded-xl hover:bg-slate-100 hover:text-slate-700 transition"><i class="fa-solid fa-gear text-lg"></i></a>
+            <a href="#" data-target="tab-user" class="nav-btn p-3 rounded-xl hover:bg-slate-100 hover:text-slate-700 transition"><i class="fa-solid fa-user text-lg"></i></a>
+        </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <!-- Верхняя шапка и метрики -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4 flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900">ZeroTrust OS</h1>
+                    <p class="text-xs text-slate-400">Control Center</p>
+                </div>
+                <div class="flex items-center space-x-6 text-sm">
+                    <!-- Статус системы -->
+                    <div class="flex items-center space-x-2 border-r pr-6 border-slate-200">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <div>
+                            <p class="text-xs text-slate-400">System Status</p>
+                            <p class="font-semibold text-slate-700">Healthy <span class="text-xs font-normal text-slate-400 ml-1">Circuit Breaker: <span class="text-emerald-600 font-medium">Closed</span></span></p>
+                        </div>
+                    </div>
+                    <!-- CPU -->
+                    <div class="border-r pr-6 border-slate-200">
+                        <p class="text-xs text-slate-400">CPU</p>
+                        <p class="font-bold text-slate-800 text-lg" id="cpu-val">42%</p>
+                        <p class="text-[10px] text-slate-400">4.2 / 10.0 cores</p>
+                    </div>
+                    <!-- RAM -->
+                    <div class="border-r pr-6 border-slate-200">
+                        <p class="text-xs text-slate-400">RAM</p>
+                        <p class="font-bold text-slate-800 text-lg" id="ram-val">61%</p>
+                        <p class="text-[10px] text-slate-400">9.8 / 16.0 GB</p>
+                    </div>
+                    <!-- Tasks -->
+                    <div class="border-r pr-6 border-slate-200">
+                        <p class="text-xs text-slate-400">Tasks</p>
+                        <p class="font-bold text-slate-800 text-lg" id="tasks-running">18</p>
+                        <p class="text-[10px] text-slate-400">running</p>
+                    </div>
+                    <!-- Queue -->
+                    <div class="border-r pr-6 border-slate-200">
+                        <p class="text-xs text-slate-400">Queue</p>
+                        <p class="font-bold text-slate-800 text-lg">4</p>
+                        <p class="text-[10px] text-slate-400">pending</p>
+                    </div>
+                    <!-- Mesh Cluster -->
+                    <div class="border-r pr-6 border-slate-200">
+                        <p class="text-xs text-slate-400">Mesh Cluster</p>
+                        <p class="font-semibold text-slate-700 text-sm">7 / 8 nodes</p>
+                    </div>
+                    <!-- WS Status -->
+                    <div>
+                        <p class="text-xs text-slate-400">WS Status</p>
+                        <p class="font-semibold text-emerald-600 flex items-center text-sm"><i class="fa-solid fa-wifi mr-1.5 text-xs"></i> Connected</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Рабочая область (Вкладки) -->
+        <main class="flex-1 p-6 overflow-hidden bg-slate-50 relative">
+            
+            <!-- ВКЛАДКА 1: Главный дэшборд (по умолчанию) -->
+            <div id="tab-dashboard" class="tab-content absolute inset-6 grid grid-cols-12 gap-6 overflow-hidden">
+                <!-- Левая колонка: WASM Плагины + Security Log -->
+                <div class="col-span-3 flex flex-col space-y-6 overflow-y-auto pr-1">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="font-bold text-slate-800 text-sm">WASM Plugins</h2>
+                            <div class="space-x-2 text-slate-400 text-sm">
+                                <i class="fa-solid fa-plus cursor-pointer hover:text-slate-600"></i>
+                                <i class="fa-solid fa-bars cursor-pointer hover:text-slate-600"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="font-semibold text-xs text-slate-800">filesystem</span>
+                                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">WASM</span>
+                                        </div>
+                                </div>
+                                <div class="flex justify-between items-center text-[10px] text-slate-400">
+                                    <span>v2.4.1</span>
+                                    <span class="text-emerald-600 font-medium">✓ Verified (Ed25519)</span>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="font-semibold text-xs text-slate-800">vector-rag</span>
+                                        <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">WASM</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center text-[10px] text-slate-400">
+                                    <span>v3.1.2</span>
+                                    <span class="text-emerald-600 font-medium">✓ Verified (Ed25519)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="font-bold text-slate-800 text-sm">Security Log</h2>
+                            <span class="text-[10px] bg-emerald-50 text-emerald-600 font-semibold px-2 py-0.5 rounded-full">All Verified</span>
+                        </div>
+                        <div class="space-y-2 text-xs text-slate-600">
+                            <div class="flex justify-between"><span class="text-slate-400">Ed25519 Signature</span><span class="text-emerald-600 font-medium">Verified</span></div>
+                            <div class="flex justify-between"><span class="text-slate-400">Public Key</span><span class="font-mono text-[11px] text-slate-500">ed25519:7f3a...9c2b</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Центральная колонка: Live Event Stream + CLI -->
+                <div class="col-span-6 bg-white rounded-2xl border border-slate-200 flex flex-col shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-slate-800 text-sm">Live Event Stream</span>
+                            <span class="flex items-center text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> LIVE
+                            </span>
+                        </div>
+                    </div>
+                    <div id="event-stream" class="flex-1 p-4 overflow-y-auto space-y-2.5 font-mono text-xs">
+                        <div class="flex items-center justify-between text-slate-500 py-1 border-b border-slate-50">
+                            <span class="text-slate-400 w-24">14:42:18.123</span>
+                            <span class="text-blue-600 font-bold w-16">SYSTEM</span>
+                            <span class="flex-1 text-slate-700">ZeroTrust OS core initialized</span>
+                            <span class="text-slate-400">status=secure</span>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-slate-100 bg-white">
+                        <div class="flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-slate-50">
+                            <span class="text-slate-400 mr-2 font-mono text-sm">&gt;</span>
+                            <input type="text" placeholder="Type a command..." class="bg-transparent flex-1 outline-none text-xs text-slate-700 font-sans">
+                            <button class="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition shadow-sm ml-2">
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Правая колонка -->
+                <div class="col-span-3 flex flex-col space-y-6 overflow-y-auto pl-1">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <h2 class="font-bold text-slate-800 text-sm mb-3">Inspector</h2>
+                        <div class="space-y-2 text-xs text-slate-600">
+                            <div class="flex justify-between"><span class="text-slate-400">Node State</span><span class="text-emerald-600 font-medium">Active</span></div>
+                            <div class="flex justify-between"><span class="text-slate-400">Security Model</span><span>Zero-Trust</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 2: Метрики и Графики -->
+            <div id="tab-metrics" class="tab-content absolute inset-6 hidden flex flex-col space-y-6 overflow-y-auto">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> System Telemetry & Metrics</h2>
+                    <p class="text-xs text-slate-400 mb-6">Real-time performance analytics pulled directly from ZeroTrust OS daemon.</p>
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="p-4 rounded-xl border border-slate-100 bg-slate-50">
+                            <p class="text-xs text-slate-400">Processor Load</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1" id="metrics-cpu-detail">42%</p>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-100 bg-slate-50">
+                            <p class="text-xs text-slate-400">Memory Allocation</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1" id="metrics-ram-detail">61%</p>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-100 bg-slate-50">
+                            <p class="text-xs text-slate-400">Active Worker Threads</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1">18 tasks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 3: Плагины -->
+            <div id="tab-plugins" class="tab-content absolute inset-6 hidden flex flex-col space-y-6 overflow-y-auto">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fa-solid fa-puzzle-piece text-emerald-500 mr-2"></i> WASM Plugins Management</h2>
+                    <p class="text-xs text-slate-400 mb-6">Cryptographically verified modules running in sandboxed WebAssembly environment.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-800">filesystem module</h3>
+                                <p class="text-xs text-slate-400">Secure disk I/O management with capability-based security.</p>
+                            </div>
+                            <span class="text-xs bg-emerald-50 text-emerald-600 font-semibold px-3 py-1 rounded-full">Active & Verified</span>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-800">vector-rag module</h3>
+                                <p class="text-xs text-slate-400">Local embedding database and context retrieval engine.</p>
+                            </div>
+                            <span class="text-xs bg-emerald-50 text-emerald-600 font-semibold px-3 py-1 rounded-full">Active & Verified</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 4: Безопасность -->
+            <div id="tab-security" class="tab-content absolute inset-6 hidden flex flex-col space-y-6 overflow-y-auto">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fa-solid fa-shield-halved text-emerald-500 mr-2"></i> Zero-Trust Security Center</h2>
+                    <p class="text-xs text-slate-400 mb-6">Strict cryptographic verification, RBAC rules, and isolated kernel boundaries.</p>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span class="text-slate-500">Ed25519 Signature Enforcement</span><span class="text-emerald-600 font-bold">Enabled</span></div>
+                        <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span class="text-slate-500">Circuit Breaker State</span><span class="text-emerald-600 font-bold">Closed (Normal)</span></div>
+                        <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span class="text-slate-500">Root Public Key Hash</span><span class="font-mono text-xs text-slate-600">7f3a9c2be8114a...</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 5: База данных -->
+            <div id="tab-database" class="tab-content absolute inset-6 hidden flex flex-col space-y-6 overflow-y-auto">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fa-solid fa-database text-emerald-500 mr-2"></i> Embedded Storage & State</h2>
+                    <p class="text-xs text-slate-400">Encrypted key-value persistence layer status: <span class="text-emerald-600 font-semibold">Online</span></p>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 6: Сеть / Mesh -->
+            <div id="tab-network" class="tab-content absolute inset-6 hidden flex flex-col space-y-6 overflow-y-auto">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fa-solid fa-network-wired text-emerald-500 mr-2"></i> Mesh Cluster Topology</h2>
+                    <p class="text-xs text-slate-400">Connected nodes across distributed environment: <span class="text-emerald-600 font-semibold">7 / 8 nodes active</span></p>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 7: Настройки -->
+            <div id="tab-settings" class="tab-content absolute inset-6 hidden flex flex-col space-y-6 overflow-y-auto">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fa-solid fa-gear text-emerald-500 mr-2"></i> System Configuration</h2>
+                    <p class="text-xs text-slate-400">Daemon preferences and network bindings.</p>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 8: Профиль -->
+            <div id="tab-user" class="tab-content absolute inset-6 hidden flex flex-col space-y-6 overflow-y-auto">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fa-solid fa-user text-emerald-500 mr-2"></i> Operator Profile</h2>
+                    <p class="text-xs text-slate-400">Authenticated via secure session token.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Скрипты: Метрики, WebSocket и Переключение вкладок -->
+    <script>
+        // 1. Обновление метрик
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/api/metrics');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    const cpuVal = document.getElementById('cpu-val');
+                    if (cpuVal && data.cpu_usage !== undefined) cpuVal.innerText = `${Math.round(data.cpu_usage)}%`;
+                    
+                    const cpuDet = document.getElementById('metrics-cpu-detail');
+                    if (cpuDet && data.cpu_usage !== undefined) cpuDet.innerText = `${Math.round(data.cpu_usage)}%`;
+
+                    const ramVal = document.getElementById('ram-val');
+                    if (ramVal && data.ram_usage !== undefined) ramVal.innerText = `${Math.round(data.ram_usage)}%`;
+                    
+                    const ramDet = document.getElementById('metrics-ram-detail');
+                    if (ramDet && data.ram_usage !== undefined) ramDet.innerText = `${Math.round(data.ram_usage)}%`;
+
+                    const tasksRunning = document.getElementById('tasks-running');
+                    if (tasksRunning && data.active_tasks !== undefined) tasksRunning.innerText = data.active_tasks;
+                }
+            } catch (e) {
+                console.error("Не удалось получить метрики:", e);
+            }
+        }
+        setInterval(fetchMetrics, 2000);
+        fetchMetrics();
+
+        // 2. WebSocket поток событий
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const ws = new WebSocket(wsProtocol + window.location.host + '/ws');
+
+        ws.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                const stream = document.getElementById('event-stream');
+                if (!stream) return;
+
+                const time = new Date().toISOString().split('T')[1].slice(0, 12);
+                let eventType = data.event || 'EVENT';
+                let description = data.task_id || data.plugin || data.reason || 'processed';
+                
+                let colorClass = 'text-blue-600';
+                if (eventType === 'TaskCompleted') colorClass = 'text-emerald-600';
+                if (eventType === 'SecurityAlert') colorClass = 'text-rose-600';
+                if (eventType === 'PluginLoaded') colorClass = 'text-purple-600';
+
+                let div = document.createElement('div');
+                div.className = "flex items-center justify-between text-slate-500 py-1 border-b border-slate-50 font-mono text-xs";
+                div.innerHTML = `
+                    <span class="text-slate-400 w-24">${time}</span>
+                    <span class="${colorClass} font-bold w-24">${eventType}</span>
+                    <span class="flex-1 text-slate-700">${description}</span>
+                    <span class="text-slate-400">${data.result || ''}</span>
+                `;
+                stream.prepend(div);
+            } catch(e) {}
+        };
+
+        // 3. Реальное переключение вкладок через сайдбар
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = btn.getAttribute('data-target');
+
+                // Переключаем подсветку кнопок сайдбара
+                navButtons.forEach(b => b.classList.remove('bg-emerald-50', 'text-emerald-600'));
+                btn.classList.add('bg-emerald-50', 'text-emerald-600');
+
+                // Переключаем видимость экранов
+                tabContents.forEach(tab => {
+                    if (tab.id === targetId) {
+                        tab.classList.remove('hidden');
+                    } else {
+                        tab.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

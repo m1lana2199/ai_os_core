@@ -1,0 +1,1 @@
+User: узнай свободное место | Executed: Get-PsDrive C
