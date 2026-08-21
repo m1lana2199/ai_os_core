@@ -1,6 +1,6 @@
 [package]
 name = "ai_os_core"
-version = "1.3.0"
+version = "1.3.4"
 edition = "2021"
 description = "High-performance system monitoring and control kernel for low-latency environments."
 license = "MIT"
