@@ -7,6 +7,12 @@ license = "MIT"
 authors = ["m1lana2199 <milanagrisenko3@gmail.com>"]
 repository = "https://github.com/m1lana2199/ai_os_core"
 
+[package.metadata.wix]
+upgrade-guid = "31E2B1CC-F507-4686-BBDD-F4D61414B62C"
+path-guid = "35D69163-140E-435E-9CF4-808AE60AA948"
+license = false
+eula = false
+
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
 reqwest = { version = "0.11", features = ["json"] }
@@ -30,3 +36,8 @@ tokio-tungstenite = "0.21"
 futures-util = "0.3"
 num_cpus = "1.16"
 sysinfo = "0.30"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
