@@ -2,6 +2,10 @@
 name = "ai_os_core"
 version = "1.3.0"
 edition = "2021"
+description = "High-performance system monitoring and control kernel for low-latency environments."
+license = "MIT"
+authors = ["m1lana2199 <milanagrisenko3@gmail.com>"]
+repository = "https://github.com/m1lana2199/ai_os_core"
 
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
